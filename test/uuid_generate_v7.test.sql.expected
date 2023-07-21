@@ -1,0 +1,84 @@
+                             List of functions
+ Schema |       Name       | Result data type | Argument data types | Type
+--------+------------------+------------------+---------------------+------
+ public | uuid_generate_v7 | uuid             |                     | func
+(1 row)
+
+-- With a clock_timestamp having the smallest serializable timestamp
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | 00000000-0000-7fff-bfff-ffffffffffff
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 1970-01-01 00:00:00+00
+serialized_timestamp    | 1970-01-01 00:00:00+00
+
+
+-- With a clock_timestamp having the largest serializable timestamp
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | ffffffff-ffff-7fff-bfff-ffffffffffff
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 10889-08-02 05:31:50.65504+00
+serialized_timestamp    | 10889-08-02 05:31:50.65504+00
+
+
+-- With a clock_timestamp with 999 milliseconds
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | 00000000-03e7-7fff-bfff-ffffffffffff
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 1970-01-01 00:00:00.999+00
+serialized_timestamp    | 1970-01-01 00:00:00.999+00
+
+
+-- With a clock_timestamp with 9994 milliseconds
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | 00000000-03e7-7fff-bfff-ffffffffffff
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 1970-01-01 00:00:00.9994+00
+serialized_timestamp    | 1970-01-01 00:00:00.999+00
+
+
+-- With a clock_timestamp with 9995 milliseconds
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | 00000000-03e8-7fff-bfff-ffffffffffff
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 1970-01-01 00:00:00.9995+00
+serialized_timestamp    | 1970-01-01 00:00:01+00
+
+
+-- With a clock_timestamp for 2022-02-22T14:22:22.00-05:00
+-- with rand_a of 0xcc3
+-- with rand_b of 0x18c4dc0c0c07398f
+-- (1 row)
+
+-[ RECORD 1 ]-----------+-------------------------------------
+uuid_generate_v7        | 017f22e2-79b0-7cc3-98c4-dc0c0c07398f
+expected_type           | uuid
+expected_version        | 7
+expected_version_binary | 0111
+expected_variant_binary | 10
+input_timestamp         | 2022-02-22 19:22:22+00
+serialized_timestamp    | 2022-02-22 19:22:22+00

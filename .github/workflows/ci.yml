@@ -1,0 +1,53 @@
+name: CI
+
+on: push
+
+jobs:
+  test:
+    name: Run tests with PostgreSQL ${{ matrix.postgres-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres-version: ['12', '13', '14', '15']
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres-version }}
+        env:
+          POSTGRES_PASSWORD: postgres
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-retries 5
+          --health-timeout 5s
+        ports:
+          - 5432:5432
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: test
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v3
+
+      - name: Install PostgreSQL 15 client
+        run: |
+          echo '::group::Add PostgreSQL APT repository'
+          echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          echo '::endgroup::'
+
+          echo '::group::Install PostgreSQL GPG key'
+          wget --quiet --output-document - -- https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            | gpg --dearmor                                                                      \
+            | sudo tee /etc/apt/trusted.gpg.d/postgresql.gpg > /dev/null
+          echo '::endgroup::'
+
+          echo '::group::Update package list and install the PostgreSQL 15 client (psql)'
+          sudo apt-get update
+          sudo apt-get --yes install -- postgresql-client-15
+          echo '::endgroup::'
+
+      - name: Run tests
+        run: test/test.sh
